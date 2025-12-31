@@ -27,5 +27,18 @@ An AI-powered document intelligence platform that goes beyond text. This system 
 
 ### 1. Clone the repository
 ```bash
-git clone [https://github.com/yourusername/smart-research-assistant.git](https://github.com/yourusername/smart-research-assistant.git)
+git clone [https://github.com/Rancidgift57/Smart-Research-Assistant-RAG](https://github.com/Rancidgift57/Smart-Research-Assistant-RAG)
 cd smart-research-assistant
+
+**Contributing**
+Contributions are welcome! To contribute:
+Fork the repository.
+Create a new branch (git checkout -b feature-name).
+Make your changes and commit (git commit -m "Add feature-name").
+Push to the branch (git push origin feature-name).
+Open a pull request with a detailed description of your changes.
+Please ensure your code follows the project's coding style and includes appropriate tests.
+
+Contact:
+Email: nnair7598@gmail.com
+**Thank You**
