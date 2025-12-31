@@ -566,8 +566,8 @@ with st.sidebar:
     
     if api_key:
         genai.configure(api_key=api_key)
-        indexing_model = genai.GenerativeModel('gemini-1.5-flash')
-        reasoning_model = genai.GenerativeModel('gemini-1.5-pro')
+        indexing_model = genai.GenerativeModel('gemini-2.5-flash')
+        reasoning_model = genai.GenerativeModel('gemini-2.5-flash')
         st.markdown('<span class="badge badge-success">✅ Connected</span>', unsafe_allow_html=True)
     else:
         st.markdown('<span class="badge badge-info">⚠️ Not Connected</span>', unsafe_allow_html=True)
@@ -579,10 +579,10 @@ with st.sidebar:
     if api_key:
         st.markdown("""
             <div class="status-card status-card-info">
-                <strong>⚡ Indexing:</strong><br>Gemini 1.5 Flash
+                <strong>⚡ Indexing:</strong><br>Gemini 2.5 Flash
             </div>
             <div class="status-card status-card-info">
-                <strong>🧠 Reasoning:</strong><br>Gemini 1.5 Pro
+                <strong>🧠 Reasoning:</strong><br>Gemini 2.5 Flash
             </div>
         """, unsafe_allow_html=True)
     else:
@@ -802,13 +802,17 @@ else:
                 st.write("🤖 **Step 2/3:** AI is analyzing each page and generating summaries...")
                 summaries = []
                 for idx, path in enumerate(img_paths):
-                    img = Image.open(path)
-                    res = indexing_model.generate_content([
-                        "Analyze this document page thoroughly. Create a detailed summary that captures all key information, data points, charts, tables, and text content for search and retrieval purposes.",
-                        img
-                    ])
-                    summaries.append(res.text)
-                    progress_bar.progress(33 + int((idx + 1) / len(img_paths) * 34))
+                    try:
+                        img = Image.open(path)
+                        res = indexing_model.generate_content([
+                            "Summarize this page accurately for search.",
+                            img
+                        ])
+                        summaries.append(res.text)
+                        progress_bar.progress(33 + int((idx + 1) / len(img_paths) * 34))
+                    except Exception as e:
+                        st.error(f"Error processing page {idx + 1}: {str(e)}")
+                        summaries.append(f"Page {idx + 1} - Processing error")
                 st.success(f"✅ Generated {len(summaries)} AI summaries!")
                 
                 # Step 3
@@ -830,3 +834,144 @@ else:
                 st.session_state.last_file = uploaded_file.name
                 st.session_state.query_count = 0
                 st.session_state.img_paths = img_paths
+                
+                status.update(label="✅ Processing Complete!", state="complete", expanded=False)
+            
+            # Success message with confetti effect
+            st.balloons()
+            st.markdown(f"""
+                <div class="status-card status-card-success">
+                    <h3 style="margin:0;">🎉 Document Ready for Analysis!</h3>
+                    <p style="margin-top:0.5rem; color:#666;">
+                        Successfully indexed <strong>{len(img_paths)} pages</strong> from <strong>{uploaded_file.name}</strong>
+                    </p>
+                    <p style="margin-top:0.5rem; font-size:0.9rem; color:#28a745;">
+                        💬 You can now ask questions below!
+                    </p>
+                </div>
+            """, unsafe_allow_html=True)
+        
+        st.divider()
+        
+        # --- CHAT INTERFACE ---
+        st.markdown("### 💬 Ask Questions About Your Document")
+        
+        # Initialize chat history
+        if "messages" not in st.session_state:
+            st.session_state.messages = []
+        
+        # Display chat history
+        for message in st.session_state.messages:
+            with st.chat_message(message["role"]):
+                st.write(message["content"])
+                if "image" in message and "page" in message:
+                    with st.expander(f"📄 View Source - Page {message['page']}", expanded=False):
+                        st.image(message["image"], use_container_width=True)
+        
+        # Chat input
+        query = st.chat_input("💭 Ask about charts, tables, or specific data in the document...")
+        
+        if query:
+            # Update query count
+            st.session_state.query_count = st.session_state.get('query_count', 0) + 1
+            
+            # Display user message
+            with st.chat_message("user"):
+                st.write(query)
+            
+            st.session_state.messages.append({"role": "user", "content": query})
+            
+            # Display assistant response
+            with st.chat_message("assistant"):
+                with st.spinner("🔍 Searching document and analyzing..."):
+                    try:
+                        # Retrieval
+                        results = st.session_state.vector_db.query(query_texts=[query], n_results=1)
+                        best_page_path = results['metadatas'][0][0]['path']
+                        page_num = results['metadatas'][0][0]['page']
+                        
+                        # Generation
+                        img_to_analyze = Image.open(best_page_path)
+                        prompt = f"Using the provided document image, answer this question in detail: {query}\n\nProvide specific information, numbers, and insights from the image."
+                        response = reasoning_model.generate_content([prompt, img_to_analyze])
+                        
+                        # Display result
+                        st.write(response.text)
+                        
+                        # Reference section
+                        with st.expander(f"📄 View Source - Page {page_num}", expanded=False):
+                            st.image(img_to_analyze, use_container_width=True)
+                            st.caption(f"📍 Reference: Page {page_num} of {uploaded_file.name}")
+                        
+                        # Save to history
+                        st.session_state.messages.append({
+                            "role": "assistant",
+                            "content": response.text,
+                            "image": img_to_analyze,
+                            "page": page_num
+                        })
+                    
+                    except Exception as e:
+                        st.error(f"❌ Error processing query: {str(e)}")
+                        st.info("💡 Try rephrasing your question or check your API key.")
+        
+        # Example queries section
+        if len(st.session_state.messages) == 0:
+            st.markdown("### 💡 Example Questions to Get Started")
+            
+            st.markdown("""
+                <p style="color: #666; margin-bottom: 1rem;">
+                    Click any example below or type your own question:
+                </p>
+            """, unsafe_allow_html=True)
+            
+            # Create responsive grid for example buttons
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                if st.button("📊 What are the key metrics?", use_container_width=True):
+                    st.session_state.example_query = "What are the key financial metrics or important numbers shown in this document?"
+                    st.rerun()
+                
+                if st.button("📈 Analyze trends", use_container_width=True):
+                    st.session_state.example_query = "What trends or patterns can you identify from the charts and data?"
+                    st.rerun()
+                
+                if st.button("📋 Extract table data", use_container_width=True):
+                    st.session_state.example_query = "Can you extract and summarize the data from any tables in the document?"
+                    st.rerun()
+            
+            with col2:
+                if st.button("📝 Summarize findings", use_container_width=True):
+                    st.session_state.example_query = "What are the main findings or conclusions in this document?"
+                    st.rerun()
+                
+                if st.button("🔍 Key insights", use_container_width=True):
+                    st.session_state.example_query = "What are the most important insights I should know from this document?"
+                    st.rerun()
+                
+                if st.button("💰 Financial data", use_container_width=True):
+                    st.session_state.example_query = "What financial data or monetary figures are mentioned?"
+                    st.rerun()
+        
+        # Handle example query
+        if 'example_query' in st.session_state:
+            query = st.session_state.example_query
+            del st.session_state.example_query
+            st.rerun()
+
+# --- FOOTER ---
+st.divider()
+st.markdown("""
+    <div class="custom-footer">
+        <p style="font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem;">
+            🚀 Powered by Google Gemini 1.5 Pro
+        </p>
+        <p style="font-size: 0.9rem; color: #888; margin-bottom: 0.5rem;">
+            Built with Streamlit • ChromaDB Vector Store • PyMuPDF
+        </p>
+        <p style="font-size: 0.8rem; color: #aaa;">
+            Made with ❤️ for researchers and analysts
+        </p>
+    </div>
+""", unsafe_allow_html=True)
