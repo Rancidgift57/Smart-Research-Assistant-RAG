@@ -28,7 +28,9 @@ An AI-powered document intelligence platform that goes beyond text. This system 
 ### 1. Clone the repository
 ```bash
 git clone [https://github.com/Rancidgift57/Smart-Research-Assistant-RAG](https://github.com/Rancidgift57/Smart-Research-Assistant-RAG)
+
 cd smart-research-assistant
+```
 
 **Contributing**
 Contributions are welcome! To contribute:
