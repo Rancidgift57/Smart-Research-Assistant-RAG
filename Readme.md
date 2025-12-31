@@ -32,18 +32,13 @@ git clone [https://github.com/Rancidgift57/Smart-Research-Assistant-RAG](https:/
 cd smart-research-assistant
 ```
 
-**Contributing**
+## Contributing
 Contributions are welcome! To contribute:
-
-Fork the repository.
-
-Create a new branch (git checkout -b feature-name).
-
-Make your changes and commit (git commit -m "Add feature-name").
-
-Push to the branch (git push origin feature-name).
-
-Open a pull request with a detailed description of your changes.
+1. Fork the repository.
+2. Create a new branch (`git checkout -b feature-name`).
+3. Make your changes and commit (`git commit -m "Add feature-name"`).
+4. Push to the branch (`git push origin feature-name`).
+5. Open a pull request with a detailed description of your changes.
 
 Please ensure your code follows the project's coding style and includes appropriate tests.
 
