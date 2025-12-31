@@ -41,6 +41,7 @@ Push to the branch (git push origin feature-name).
 Open a pull request with a detailed description of your changes.
 Please ensure your code follows the project's coding style and includes appropriate tests.
 
-Contact:
+**Contact:**
 Email: nnair7598@gmail.com
+
 **Thank You**
