@@ -965,7 +965,7 @@ st.divider()
 st.markdown("""
     <div class="custom-footer">
         <p style="font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem;">
-            🚀 Powered by Google Gemini 1.5 Pro
+            🚀 Powered by Google Gemini 2.5 Flash
         </p>
         <p style="font-size: 0.9rem; color: #888; margin-bottom: 0.5rem;">
             Built with Streamlit • ChromaDB Vector Store • PyMuPDF
@@ -974,4 +974,5 @@ st.markdown("""
             Made with ❤️ for researchers and analysts
         </p>
     </div>
+
 """, unsafe_allow_html=True)
