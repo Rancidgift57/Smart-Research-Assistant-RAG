@@ -4,20 +4,20 @@ An AI-powered document intelligence platform that goes beyond text. This system 
 
 ## 🌟 Key Features
 * **Multimodal Reasoning:** Uses Computer Vision to "see" page layouts, ensuring that charts and tables—which usually break in standard text-based RAG—are interpreted accurately.
-* **Flash-to-Pro Pipeline:** Optimized for cost and performance. **Gemini 1.5 Flash** handles high-volume page indexing, while **Gemini 1.5 Pro** handles complex query reasoning.
+* **Flash-to-Pro Pipeline:** Optimized for cost and performance. **Gemini 2.5 Flash** handles high-volume page indexing, while **Gemini 2.5 Flash** handles complex query reasoning.
 * **Vectorized Visual Context:** Implements **ChromaDB** to store and retrieve high-dimensional embeddings of page summaries.
 * **Interactive Citations:** Displays the exact page image used as a reference for every AI-generated answer to eliminate hallucinations.
 * **Fully Responsive UI:** A modern, mobile-friendly dashboard built with Streamlit and custom CSS glassmorphism.
 
 ## 🏗️ System Architecture
 1.  **Ingestion:** PDF pages are converted into high-resolution images using `PyMuPDF`.
-2.  **Indexing:** Gemini 1.5 Flash generates detailed descriptions for every page (extracting data from charts/tables).
+2.  **Indexing:** Gemini 2.5 Flash generates detailed descriptions for every page (extracting data from charts/tables).
 3.  **Storage:** These summaries are stored in a **ChromaDB** vector database.
 4.  **Retrieval:** When a user asks a question, the system retrieves the most relevant page images based on semantic similarity.
-5.  **Reasoning:** The retrieved images + the user query are sent to Gemini 1.5 Pro for final multimodal synthesis.
+5.  **Reasoning:** The retrieved images + the user query are sent to Gemini 2.5 Flash for final multimodal synthesis.
 
 ## 🛠️ Tech Stack
-* **LLM:** Google Gemini 1.5 Pro & Flash (via Google AI Studio API)
+* **LLM:** Google Gemini 2.5 Pro & Flash (via Google AI Studio API)
 * **Vector DB:** ChromaDB
 * **Frontend:** Streamlit (Custom CSS)
 * **PDF Engine:** PyMuPDF (fitz)
