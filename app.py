@@ -716,7 +716,7 @@ if not api_key:
             </div>
             <div class="status-card status-card-info">
                 <h4 style="margin:0;">🎯 Highly Accurate</h4>
-                <p style="margin-top:0.5rem; color: #666;">Powered by Google's Gemini 1.5 Pro model</p>
+                <p style="margin-top:0.5rem; color: #666;">Powered by Google's Gemini 2.5 Flash model</p>
             </div>
         """, unsafe_allow_html=True)
     
@@ -976,3 +976,4 @@ st.markdown("""
     </div>
 
 """, unsafe_allow_html=True)
+
