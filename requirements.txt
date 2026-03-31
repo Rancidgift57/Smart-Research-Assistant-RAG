@@ -3,3 +3,4 @@ streamlit
 pymupdf
 chromadb
 pillow
+plotly
